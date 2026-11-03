@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Dashboard</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#F6F3EE;--card:#FFFFFF;--ink:#161514;--soft:#4E4943;--mute:#6E6860;--line:#E2DCD2;--blue:#0B5FA5;
+--ok-b:#E3F1EC;--ok-f:#155C3A;--info-b:#E5EEF9;--info-f:#0A3D6B;--warn-b:#FCEFD9;--warn-f:#7A3E00;--bad-b:#FBE4E1;--bad-f:#8E2418;--gray-b:#EFEBE4;--gray-f:#3E3A35;
+--c-ai:#2A78D6;--c-web:#EB6834;--c-salon:#1BAF7A;--bar:#8DB8EA}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:17px;line-height:1.4}
+button{font-family:inherit;font-size:inherit;color:inherit}
+header{background:var(--card);padding:14px 16px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.title{font-size:22px;font-weight:800}
+.sub{font-size:15px;color:var(--mute)}
+select{font-size:16px;min-height:44px;border-radius:10px;border:2px solid var(--line);background:#fff;padding:0 10px;max-width:55%}
+nav{display:flex;gap:8px;overflow-x:auto;padding:10px 0 4px;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;min-height:48px;padding:0 16px;border-radius:999px;font-size:17px;font-weight:700;border:2px solid #CFC9BF;background:#fff;cursor:pointer}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+main{padding:14px 16px 110px;display:flex;flex-direction:column;gap:14px;max-width:720px;margin:0 auto}
+.help{background:#FFF8E8;border:1px solid #F0DDB2;border-radius:14px;padding:12px 14px}
+.help b{display:block;margin-bottom:4px}
+.helpbtn{background:none;border:0;color:var(--blue);font-weight:700;padding:0;min-height:40px;cursor:pointer}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.card.warn{border:2px solid #F0B868;background:#FFFBF3}
+.h2{font-size:19px;font-weight:800}
+.big{font-size:26px;font-weight:800}
+.muted{color:var(--mute);font-size:15px}
+.row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);width:100%;text-align:left;background:none;border-left:0;border-right:0;border-bottom:0;cursor:pointer}
+.row:first-of-type{border-top:0}
+.row .t{min-width:62px;font-weight:800;font-size:18px}
+.row .t small{display:block;font-size:13px;color:var(--mute);font-weight:600}
+.grow{flex:1;min-width:0}
+.who{font-weight:700;font-size:18px}
+.what{color:var(--soft);font-size:15px;word-wrap:break-word}
+.pill{display:inline-block;font-size:14px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--ok-b);color:var(--ok-f)}.info{background:var(--info-b);color:var(--info-f)}.warn{background:var(--warn-b);color:var(--warn-f)}.bad{background:var(--bad-b);color:var(--bad-f)}.gray{background:var(--gray-b);color:var(--gray-f)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:48px;padding:0 14px;border-radius:999px;font-size:16px;font-weight:700;border:2px solid #CFC9BF;background:#fff;cursor:pointer}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.reply{background:#F3F6FA;border-radius:10px;padding:8px 10px;font-size:15px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:190px;padding-top:6px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:0}
+.bar span.n{font-size:14px;font-weight:700}
+.bar span.b{display:block;width:100%;max-width:34px;border-radius:4px 4px 0 0;background:var(--bar)}
+.bar.last span.b{background:var(--c-ai)}
+.labels{display:flex;gap:6px}.labels span{flex:1;text-align:center;font-size:13px;color:var(--soft);min-width:0;overflow:hidden}
+.split{display:flex;height:22px;border-radius:6px;overflow:hidden;background:var(--gray-b)}
+.leg{display:flex;flex-direction:column;gap:6px;font-size:16px}
+.leg i{display:inline-block;width:14px;height:14px;border-radius:3px;margin-right:8px;vertical-align:-2px}
+.fun{display:flex;flex-direction:column;gap:4px}
+.fun .l{display:flex;justify-content:space-between;font-size:17px}
+.fun .track{height:10px;border-radius:999px;background:#E5EEF9;overflow:hidden}
+.fun .track span{display:block;height:100%;background:var(--c-ai)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stat{background:var(--bg);border-radius:12px;padding:10px}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:14px;color:var(--mute)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.overlay.on{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:720px;max-height:92vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px;display:flex;flex-direction:column;gap:12px}
+.close{min-height:48px;border-radius:12px;border:2px solid #CFC9BF;background:#fff;font-weight:700;cursor:pointer}
+.btn{display:flex;align-items:center;justify-content:center;min-height:48px;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;text-decoration:none;padding:0 14px}
+.bub{max-width:85%;padding:10px 12px;border-radius:14px;font-size:16px}
+.bub.them{background:#fff;border:1px solid var(--line);align-self:flex-start}
+.bub.ai{background:#E5EEF9;align-self:flex-end}
+.bub.you{background:#E3F1EC;align-self:flex-end}
+.bub small{display:block;color:var(--mute);font-size:12px;margin-top:4px}
+.empty{color:var(--mute);text-align:center;padding:18px 8px}
+.center{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:20px}
+input.search{width:100%;min-height:48px;font-size:17px;border-radius:12px;border:2px solid var(--line);padding:0 12px}
+a{color:var(--blue)}
+.filters{display:flex;flex-direction:column;gap:8px}
+.seg{display:flex;gap:6px}
+.seg button{flex:1 1 auto;min-width:0;min-height:46px;padding:0 4px;border-radius:12px;font-size:15px;font-weight:700;border:2px solid #CFC9BF;background:#fff;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:#D9480F;color:#fff;font-size:13px;line-height:20px}
+.askbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:#fff;border-top:1px solid var(--line);padding:8px 12px calc(10px + env(safe-area-inset-bottom));display:flex;gap:8px;align-items:center}
+.askbar input,.ansbox input{flex:1;min-width:0;min-height:50px;font-size:17px;border:2px solid var(--line);border-radius:14px;padding:0 14px;background:#fff}
+.askbar button,.ansbox button{min-height:50px;padding:0 18px;border-radius:14px;border:0;background:var(--blue);color:#fff;font-weight:800;font-size:17px;cursor:pointer}
+.you{align-self:flex-end;background:#E3F1EC;border-radius:14px;padding:10px 12px;font-size:16px;max-width:90%}
+.ans{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.45;word-wrap:break-word}
+.acts{display:flex;flex-direction:column;gap:8px}
+.acts button{min-height:52px;border-radius:14px;border:2px solid var(--blue);background:#fff;color:var(--blue);font-weight:800;font-size:17px;cursor:pointer}
+.acts button:first-child{background:var(--blue);color:#fff}
+.ansbox{display:flex;gap:8px}
+.donebar{background:var(--ok-b);color:var(--ok-f);border-radius:12px;padding:10px 12px;font-weight:700}
+.askbar .mic,.ansbox .mic{min-width:56px;padding:0;background:#fff;color:var(--ink);border:2px solid var(--line);font-size:24px}
+.askbar.rec,.ansbox.rec{background:#FDECEA}
+.ansbox.rec{border-radius:14px;padding:6px}
+.askbar.rec .mic,.ansbox.rec .mic{background:#C62828;border-color:#C62828;color:#fff;font-size:20px}
+.recinfo{flex:1;min-width:0;font-size:17px;font-weight:700;color:#8E2418;display:none;align-self:center}
+.askbar.rec .recinfo,.ansbox.rec .recinfo{display:block}
+.askbar.rec #askq,.ansbox.rec #sheetq{display:none}
+.askbar .x,.ansbox .x{display:none;background:#fff;color:var(--ink);border:2px solid var(--line)}
+.askbar.rec .x,.ansbox.rec .x{display:block}
+</style>
+</head>
+<body>
+<header id="hdr" style="display:none">
+  <div class="hrow">
+    <div><div class="title" id="hname">Dashboard</div><div class="sub" id="hdate"></div></div>
+    <select id="pick" style="display:none" aria-label="Choose a client"></select>
+  </div>
+  <nav id="tabs"></nav>
+</header>
+<main id="main"><div class="center"><div class="h2">Opening your dashboard…</div></div></main>
+<div class="overlay" id="ov"><div class="sheet" id="sheet"></div></div>
+<form class="askbar" id="askbar" autocomplete="off"><button type="button" class="mic" id="mic" aria-label="Speak">🎤</button><input id="askq" enterkeyhint="send" placeholder="Ask or book…" aria-label="Ask or book"><div class="recinfo" id="recinfo">● Listening… 0 s</div><button type="button" class="x" id="recx" aria-label="Cancel">✕</button><button type="submit" id="asksend">Send</button></form>
+<script>
+(function(){
+var tg = window.Telegram && window.Telegram.WebApp;
+var N8N = 'https://diallomamadou1.app.n8n.cloud';   // the page can live anywhere; data always comes from n8n
+var API = N8N + '/webhook/dash-api';
+var S = { slug: null, tab: 'today', me: null, clients: null, client: null, args: {}, showHelp: true, svcFilter: '' };
+var TABS = [['today','Today'],['messages','Messages'],['bookings','Bookings'],['regulars','Regulars'],['videos','Videos'],
+            ['followups','Follow up'],['waitlist','Waitlist'],['knowledge','What the AI knows'],['rivals','Other salons'],['settings','Settings']];
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function pill(t, tone){ return t ? '<span class="pill ' + esc(tone || 'gray') + '">' + esc(t) + '</span>' : ''; }
+function $(id){ return document.getElementById(id); }
+try { if (tg) { tg.ready(); tg.expand(); if (tg.setHeaderColor) tg.setHeaderColor('#FFFFFF'); if (tg.setBackgroundColor) tg.setBackgroundColor('#F6F3EE'); } } catch (e) {}
+try { var hs = localStorage.getItem('dash_help'); if (hs === '0') S.showHelp = false; } catch (e) {}
+
+function api(action, args){
+  var initData = tg && tg.initData;
+  if (!initData) return Promise.resolve({ ok: false, error: 'not_in_telegram' });
+  return fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ init_data: initData, slug: S.slug, action: action, args: args || {} }) })
+    .then(function(r){ return r.json(); })
+    .catch(function(){ return { ok: false, error: 'network' }; });
+}
+var ERR = {
+  not_in_telegram: 'Please open the dashboard from the 📊 button in your Telegram group.',
+  not_in_group: 'This dashboard is only for people in the salon\'s Telegram group.',
+  too_old: 'This page was open too long. Close it and open it again from the group.',
+  bad_signature: 'Telegram could not confirm who you are. Close it and open it again from the group.',
+  network: 'No connection right now. Check your internet and try again.',
+  no_bot_token_in_vault: 'The dashboard is not switched on yet.',
+  unknown_client: 'This salon was not found.'
+};
+function fail(r){
+  var msg = (r && (r.hint || ERR[r.error])) || 'Something went wrong. Please try again in a minute.';
+  $('main').innerHTML = '<div class="center"><div class="h2">' + esc(msg) + '</div>' +
+    '<button class="close" style="padding:0 20px" onclick="location.reload()">Try again</button></div>';
+}
+
+function drawHeader(){
+  $('hdr').style.display = '';
+  $('hname').textContent = (S.client && S.client.name) || 'Dashboard';
+  $('hdate').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  var tabs = TABS.slice();
+  if (S.me && S.me.studio) tabs.push(['admin', 'Studio Admin']);
+  $('tabs').innerHTML = tabs.map(function(t){ return '<button class="tab' + (S.tab === t[0] ? ' on' : '') + '" data-tab="' + t[0] + '">' + esc(t[1]) + '</button>'; }).join('');
+  if (S.me && S.me.studio && S.clients) {
+    $('pick').style.display = '';
+    $('pick').innerHTML = S.clients.map(function(c){ return '<option value="' + esc(c.slug) + '"' + (S.client && c.slug === S.client.slug ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('');
+  }
+}
+$('tabs').addEventListener('click', function(e){ var b = e.target.closest('[data-tab]'); if (!b) return; S.tab = b.getAttribute('data-tab'); S.args = {}; load(); });
+$('pick').addEventListener('change', function(){ S.slug = this.value; S.args = {}; load(); });
+
+function helpBox(h){
+  if (!h) return '';
+  if (!S.showHelp) return '<button class="helpbtn" data-act="help">What is this page?</button>';
+  return '<div class="help"><b>What is this page?</b>' + esc(h.what) + '<br><br><b>What to do</b>' + esc(h.how) +
+    '<br><button class="helpbtn" data-act="help">Hide this box</button></div>';
+}
+
+function load(){
+  $('main').innerHTML = '<div class="empty">Loading…</div>';
+  var tabNow = S.tab;
+  var args = S.args;
+  if (S.tab === 'messages' && !args.kind) { args = Object.assign({ kind: 'dm' }, args); }
+  api(S.tab, args).then(function(r){
+    if (tabNow !== S.tab) return;
+    if (!r || !r.ok) return fail(r);
+    S.me = r.me; S.client = r.client; if (r.clients) S.clients = r.clients; S.slug = r.client.slug;
+    drawHeader();
+    var d = r.data || {};
+    if (d.error) return fail({ error: d.error });
+    var html = (R[S.tab] || function(){ return ''; })(d);
+    $('main').innerHTML = helpBox(d.help) + html;
+    if (S.tab === 'bookings' && (S.args.range || 'week') === 'day') loadDay(S.args.day || todayStr());
+    window.scrollTo(0, 0);
+  });
+}
+
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+function ymd(dt){ return dt.getFullYear() + '-' + pad(dt.getMonth() + 1) + '-' + pad(dt.getDate()); }
+function todayStr(){ return ymd(new Date()); }
+function weekDay(i){ var t = new Date(); t.setHours(12, 0, 0, 0); t.setDate(t.getDate() - t.getDay() + i); return ymd(t); }
+function loadDay(day){
+  var box = document.getElementById('daylist'); if (!box) return;
+  api('today', { day: day }).then(function(r){
+    var el = document.getElementById('daylist'); if (!el) return;
+    var d = r && r.ok && r.data; if (!d || d.error) { el.innerHTML = '<div class="empty">Could not load this day.</div>'; return; }
+    var rows = (d.schedule || []).filter(function(x){ return x.kind === 'booking'; });
+    el.innerHTML = '<div class="h2">' + esc(d.date_label) + ' · ' + rows.length + (rows.length === 1 ? ' appointment' : ' appointments') + '</div>' +
+      (rows.length ? rows.map(function(x){ return '<button class="row" data-cust-b="' + esc(x.booking_id) + '"><div class="t">' + esc(x.time) + '<small>' + esc(x.ampm || '') + '</small></div><div class="grow"><div class="who">' + esc(x.who) + '</div><div>' + pill(x.status, x.tone) + '</div><div class="what">' + esc([x.what, x.from].filter(Boolean).join(' · ')) + '</div></div></button>'; }).join('')
+                   : '<div class="empty">No appointments this day.</div>');
+  });
+}
+// ---------- screens ----------
+var R = {};
+R.today = function(d){
+  var h = '';
+  (d.needs_you || []).forEach(function(n){
+    h += '<div class="card warn"><div class="muted" style="font-weight:800;color:var(--warn-f)">NEEDS YOU</div>' +
+      '<div class="h2">' + esc(n.title) + '</div>' + (n.detail ? '<div class="what">' + esc(n.detail) + '</div>' : '') +
+      (n.note ? '<div class="what">' + esc(n.note) + '</div>' : '') + (n.how ? '<div style="font-weight:700">👉 ' + esc(n.how) + '</div>' : '') +
+      (n.booking_id ? '<button class="close" data-cust-b="' + esc(n.booking_id) + '">Customer card</button>' : '') +
+      (n.conversation_id ? '<button class="close" data-thread="' + esc(n.conversation_id) + '">Read the message</button>' : '') +
+      (n.kind === 'comment' && n.item_id ? '<button class="close" data-comment="' + esc(n.item_id) + '">Read the comment</button>' : '') + '</div>';
+  });
+  var c = d.counts || {};
+  h += '<div class="card"><div class="h2">Today, hour by hour</div><div class="muted">' + esc(c.appointments || 0) + ' appointments' +
+       (c.here ? ' · ' + esc(c.here) + ' here' : '') + ' · Tap a person to see their card.</div>';
+  if (!(d.schedule || []).length) h += '<div class="empty">No appointments today.</div>';
+  (d.schedule || []).forEach(function(s){
+    var tag = s.kind === 'booking' ? 'button' : 'div';
+    h += '<' + tag + ' class="row"' + (s.booking_id ? ' data-cust-b="' + esc(s.booking_id) + '"' : '') + '><div class="t">' + esc(s.time) + '<small>' + esc(s.ampm || '') + '</small></div>' +
+      '<div class="grow"><div class="who">' + esc(s.who) + '</div>' + (s.status ? '<div>' + pill(s.status, s.tone) + '</div>' : '') + '<div class="what">' + esc([s.what, s.from].filter(Boolean).join(' · ')) + '</div></div></' + tag + '>';
+  });
+  return h + '</div>';
+};
+R.messages = function(d){
+  var f = S.args.filter || 'needs', p = S.args.platform || 'all', k = S.args.kind || 'dm', w = S.args.when || 'all', c = d.counts || {}, ks = d.kinds || {};
+  function chips(arg, cur, list){ return '<div class="chips">' + list.map(function(x){ return '<button class="chip' + (cur === x[0] ? ' on' : '') + '" data-arg="' + arg + '" data-val="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>'; }
+  function seg(arg, cur, list){ return '<div class="seg">' + list.map(function(x){ return '<button class="' + (cur === x[0] ? 'on' : '') + '" data-arg="' + arg + '" data-val="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>'; }
+  function badge(n){ return n ? ' <span class="badge">' + esc(n) + '</span>' : ''; }
+  var h = '<div class="filters">';
+  h += seg('kind', k, [['dm','💬 Messages ' + esc(ks.dm || 0) + badge(ks.dm_needs)],['comment','🗨️ Comments ' + esc(ks.comment || 0) + badge(ks.comment_needs)]]);
+  h += seg('platform', p, (k === 'comment' ? [['all','All'],['instagram','Insta'],['facebook','FB'],['tiktok','TikTok']]
+                                           : [['all','All'],['sms','Text'],['instagram','Insta'],['facebook','FB'],['tiktok','TikTok']]));
+  h += seg('when', w, [['today','Today'],['yesterday','Yesterday'],['week','Week'],['all','Month']]);
+  h += seg('filter', f, [['needs','Needs you ' + esc(c.needs || 0)],['done','Answered ' + esc(c.done || 0)],['all','All ' + esc(c.all || 0)]]);
+  h += '</div>';
+  var items = d.items || [];
+  if (!items.length) h += '<div class="card"><div class="empty">' + (f === 'needs' ? 'Nothing is waiting for you here. 🎉' : 'Nothing here.') + '</div></div>';
+  items.forEach(function(m){
+    var attr = m.kind === 'comment' ? 'data-comment="' + esc(m.item_id) + '"' : 'data-thread="' + esc(m.conversation_id) + '"';
+    h += '<button class="card" style="text-align:left;cursor:pointer" ' + attr + '><div class="hrow"><div class="who">' + esc(m.who) + '</div>' + pill(m.tag, m.tone) + '</div>' +
+      '<div class="muted">' + esc(m.where) + '</div><div>They wrote: ' + esc(m.said) + '</div>' +
+      (m.reply_label ? '<div class="reply"><b>' + esc(m.reply_label) + '</b> ' + esc(m.reply || '') + '</div>' : '') + '</button>';
+  });
+  if (d.more && items.length) h += '<button class="close" data-more="' + esc(items[items.length - 1].at) + '">Show older messages</button>';
+  return h;
+};
+R.bookings = function(d){
+  var rg = S.args.range || 'week';
+  var h = '<div class="chips">' + [['day','Day'],['week','Week'],['month','Month']].map(function(x){
+    return '<button class="chip' + (rg === x[0] ? ' on' : '') + '" data-arg="range" data-val="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  var bars = d.bars || [], max = 1;
+  bars.forEach(function(b){ if ((b.n || 0) > max) max = b.n; });
+  var last = rg === 'day' ? -1 : bars.length - 1;
+  h += '<div class="card"><div class="big">' + esc(d.headline) + '</div><div style="font-weight:700">' + esc(d.change) + '</div>' +
+    (d.so_far ? '<div class="muted">' + esc(d.so_far) + '</div>' : '') + (d.best ? '<div class="muted">⭐ ' + esc(d.best) + '</div>' : '') +
+    '<div class="bars" role="img" aria-label="' + esc(bars.map(function(b){ return b.label + ' ' + (b.n == null ? 'not yet' : b.n); }).join(', ')) + '">' +
+    bars.map(function(b, i){ var n = b.n == null ? null : b.n, dd = rg === 'day' ? weekDay(i) : null, sel = dd && dd === (S.args.day || todayStr());
+      return '<' + (dd ? 'button data-day="' + dd + '"' : 'div') + ' class="bar' + (i === last || sel ? ' last' : '') + '" style="background:none;border:0;padding:0;cursor:' + (dd ? 'pointer' : 'default') + '"><span class="n">' + (n == null ? '' : n) + '</span><span class="b" style="height:' + (n ? Math.max(3, Math.round(n / max * 150)) : 2) + 'px' + (n == null ? ';opacity:.25' : '') + '"></span></' + (dd ? 'button' : 'div') + '>'; }).join('') +
+    '</div><div class="labels">' + bars.map(function(b){ return '<span>' + esc(b.label) + '</span>'; }).join('') + '</div>' +
+    '<div class="muted">' + esc(d.counts_rule) + (rg === 'day' ? ' Tap a day to see who is coming.' : '') + '</div></div>' +
+    (rg === 'day' ? '<div class="card" id="daylist"><div class="empty">Loading the day…</div></div>' : '');
+  var s = d.split || {}, tot = (s.ai || 0) + (s.web || 0) + (s.salon || 0) + (s.unknown || 0);
+  function pc(n){ return tot ? Math.round(100 * n / tot) + '%' : '0%'; }
+  h += '<div class="card"><div class="h2">Where these bookings came from</div><div class="split">' +
+    (s.ai ? '<span style="flex:' + s.ai + ';background:var(--c-ai)"></span>' : '') + (s.web ? '<span style="flex:' + s.web + ';background:var(--c-web)"></span>' : '') +
+    (s.salon ? '<span style="flex:' + s.salon + ';background:var(--c-salon)"></span>' : '') + (s.unknown ? '<span style="flex:' + s.unknown + ';background:#C9C2B8"></span>' : '') +
+    '</div><div class="leg"><div><i style="background:var(--c-ai)"></i>Booked by the AI: <b>' + esc(s.ai || 0) + '</b> (' + pc(s.ai || 0) + ')</div>' +
+    '<div><i style="background:var(--c-web)"></i>From your website: <b>' + esc(s.web || 0) + '</b> (' + pc(s.web || 0) + ')</div>' +
+    '<div><i style="background:var(--c-salon)"></i>Made by you at the salon: <b>' + esc(s.salon || 0) + '</b> (' + pc(s.salon || 0) + ')</div>' +
+    (s.unknown ? '<div><i style="background:#C9C2B8"></i>Not known: <b>' + esc(s.unknown) + '</b></div>' : '') + '</div></div>';
+  var w = d.your_week || {}, fun = w.funnel || [], fmax = 1;
+  fun.forEach(function(x){ if ((x.n || 0) > fmax) fmax = x.n; });
+  h += '<div class="card"><div class="h2">This week, from your videos to bookings</div><div class="fun">' +
+    fun.map(function(x){ return '<div class="l"><span>' + esc(x.label) + '</span><b>' + esc(Number(x.n || 0).toLocaleString('en-US')) + '</b></div><div class="track"><span style="width:' + Math.max(2, Math.round((x.n || 0) / fmax * 100)) + '%"></span></div>'; }).join('') +
+    '</div>' + (w.not_booked_yet ? '<button class="close" data-tab-go="followups">See the ' + esc(w.not_booked_yet) + ' people who have not booked yet</button>' : '') + '</div>';
+  return h;
+};
+R.regulars = function(d){
+  var s = d.summary || {};
+  var h = '<div class="card"><div class="big">' + esc(s.due ? d.headline : 'No regulars are due this week.') + '</div><div class="grid">' +
+    '<div class="stat"><b>' + esc(s.regulars || 0) + '</b><span>regulars (2+ visits)</span></div><div class="stat"><b>' + esc(s.coming_back || 0) + '</b><span>already booked again</span></div>' +
+    '<div class="stat"><b>' + esc(s.due || 0) + '</b><span>due now or this week</span></div><div class="stat"><b>' + esc(s.not_seen || 0) + '</b><span>not seen for a long time</span></div></div></div>';
+  var items = d.items || [];
+  if (!items.length) return h + '<div class="card"><div class="empty">Nobody is due right now.</div></div>';
+  h += '<div class="card">';
+  items.forEach(function(r){
+    h += '<button class="row" data-cust-k="' + esc(r.key) + '"><div class="grow"><div class="who">' + esc(r.who) + '</div><div class="what">' + esc(r.what) + '</div><div class="muted">' + esc(r.last) + '</div></div>' + pill(r.tag, r.tone) + '</button>';
+  });
+  return h + '</div>';
+};
+R.videos = function(d){
+  var h = '', f = d.film_today;
+  if (f) h += '<div class="card"><div class="muted" style="font-weight:800">' + esc(String(f.day || '').toUpperCase()) + '</div><div class="h2">' + esc(f.topic) + '</div>' +
+    (f.hook ? '<div>🎬 Start with: “' + esc(f.hook) + '”</div>' : '') + (f.shots ? '<div class="what" style="white-space:pre-line">' + esc(f.shots) + '</div>' : '') +
+    (f.ending ? '<div>End with: “' + esc(f.ending) + '”</div>' : '') + '</div>';
+  else h += '<div class="card"><div class="h2">Nothing to film is planned</div><div class="muted">New ideas come every Sunday.</div></div>';
+  h += '<div class="card"><div class="h2">Your posts this week</div>';
+  if (!(d.posts_this_week || []).length) h += '<div class="empty">No posts this week.</div>';
+  (d.posts_this_week || []).forEach(function(p){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(p.title) + '</div><div class="what">' + esc(p.where) + '</div></div>' + pill(p.status, p.tone) + '</div>'; });
+  h += '</div><div class="card"><div class="h2">Videos that brought you customers</div><div class="muted">Last 60 days</div>';
+  if (!(d.best_videos || []).length) h += '<div class="empty">No comments on your videos yet.</div>';
+  (d.best_videos || []).forEach(function(v){
+    h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(v.title) + '</div><div class="what">' + esc(v.when) + '</div>' +
+      '<div class="grid" style="margin-top:6px"><div class="stat"><b>' + (v.views == null ? '–' : esc(Number(v.views).toLocaleString('en-US'))) + '</b><span>saw it</span></div>' +
+      '<div class="stat"><b>' + esc(v.comments) + '</b><span>commented</span></div><div class="stat"><b>' + esc(v.asked) + '</b><span>asked a price</span></div>' +
+      '<div class="stat"><b>' + esc(v.booked) + '</b><span>booked</span></div></div>' + (v.link ? '<a href="' + esc(v.link) + '" target="_blank" rel="noopener">Open the video</a>' : '') + '</div></div>';
+  });
+  return h + '</div>';
+};
+R.followups = function(d){
+  var h = '<div class="card"><div class="big">' + esc(d.count || 0) + ' people asked and did not book</div></div>';
+  (d.items || []).forEach(function(l){
+    h += '<div class="card"><div class="who">' + esc(l.who) + '</div><div class="what">' + esc(l.wanted) + '</div>' +
+      (l.said ? '<div>Last thing they wrote: “' + esc(l.said) + '”</div>' : '') +
+      (l.draft ? '<div class="reply"><b>Message ready:</b> ' + esc(l.draft) + '</div>' : '<div class="muted">No message ready yet.</div>') +
+      (l.last_nudge ? '<div class="muted">' + esc(l.last_nudge) + '</div>' : '') +
+      (l.lead_id ? '<button class="close" data-cust-l="' + esc(l.lead_id) + '">Customer card</button>' : '') + '</div>';
+  });
+  return h;
+};
+R.waitlist = function(d){
+  var h = '<div class="card"><div class="h2">Spots that opened</div>';
+  if (!(d.openings || []).length) h += '<div class="empty">No open spots right now.</div>';
+  (d.openings || []).forEach(function(o){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(o.when) + '</div><div class="what">' + esc(o.what) + ' · ' + esc(o.why) + '</div>' +
+    '<div>' + esc(o.latest || o.state) + '</div></div></div>'; });
+  h += '</div><div class="card"><div class="h2">Waiting for a spot</div>';
+  if (!(d.waiting || []).length) h += '<div class="empty">Nobody is waiting.</div>';
+  (d.waiting || []).forEach(function(w){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(w.who) + '</div><div class="what">' + esc(w.wants) + '</div><div class="muted">' + esc(w.since) + '</div></div></div>'; });
+  return h + '</div>';
+};
+R.knowledge = function(d){
+  var h = '<div class="card"><div class="big">' + esc(d.facts_on || 0) + ' facts the AI uses</div><div class="muted">' + esc(d.facts_off || 0) + ' turned off</div></div>';
+  (d.groups || []).forEach(function(g){
+    h += '<div class="card"><div class="h2">' + esc(g.group) + '</div>';
+    (g.items || []).forEach(function(k){ h += '<div class="row" style="cursor:default' + (k.on ? '' : ';opacity:.6') + '"><div class="grow"><div>' + pill(k.state, k.on ? 'ok' : 'gray') + '</div>' + (k.title ? '<div class="who">' + esc(k.title) + '</div>' : '') +
+      '<div class="what">' + esc(k.text) + '</div><div class="muted">' + esc(k.from) + (k.updated ? ' · ' + esc(k.updated) : '') + '</div></div></div>'; });
+    h += '</div>';
+  });
+  var sv = d.square_services || [];
+  if (sv.length) {
+    h += '<div class="card"><div class="h2">Services and prices from Square</div><div class="muted">These change in Square. ' + esc(d.square_services_note || '') + '</div>' +
+      '<input class="search" id="svcq" placeholder="Search a service" value="' + esc(S.svcFilter) + '"><div id="svcl">' + svcRows(sv) + '</div></div>';
+  }
+  S._svc = sv;
+  return h;
+};
+function svcRows(sv){
+  var q = (S.svcFilter || '').toLowerCase();
+  return sv.filter(function(s){ return !q || String(s.name).toLowerCase().indexOf(q) >= 0; })
+    .map(function(s){ return '<div class="row" style="cursor:default"><div class="grow"><div class="who" style="font-size:16px">' + esc(s.name) + '</div><div class="what">' + esc([s.price, s.time].filter(Boolean).join(' · ')) + '</div></div></div>'; }).join('') || '<div class="empty">No service found.</div>';
+}
+R.rivals = function(d){
+  var h = '';
+  if (d.idea) h += '<div class="card" style="background:#EEF6FF"><div class="h2">💡 Idea for you</div><div>' + esc(d.idea) + '</div></div>';
+  h += '<div class="card"><div class="h2">' + esc(d.ads_count || 0) + ' ads from ' + esc(d.salons_count || 0) + ' salons this week</div><div class="muted">' + esc(d.note || '') + '</div>';
+  if (!(d.ads || []).length) h += '<div class="empty">No new ads this week.</div>';
+  (d.ads || []).forEach(function(a){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(a.who) + '</div><div class="what">' + esc(a.what) + '</div><div class="muted">' + esc([a.when, a.where].filter(Boolean).join(' · ')) + '</div>' +
+    (a.link ? '<a href="' + esc(a.link) + '" target="_blank" rel="noopener">See the ad</a>' : '') + '</div>' + pill(a.tag, /special/i.test(a.tag) ? 'warn' : 'gray') + '</div>'; });
+  h += '</div>';
+  if ((d.watching || []).length) {
+    h += '<div class="card"><div class="h2">Salons you watch</div>';
+    d.watching.forEach(function(w){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who">' + esc(w.who) + '</div><div class="what">' + esc((w.ads_running == null ? '?' : w.ads_running) + ' ads running') + (w.checked ? ' · ' + esc(w.checked) : '') + '</div></div></div>'; });
+    h += '</div>';
+  }
+  return h;
+};
+R.settings = function(d){
+  var h = '<div class="card"><div class="h2">Text messages</div><div>' + esc((d.texting || {}).state) + (d.texting && d.texting.number ? ' · ' + esc(d.texting.number) : '') + '</div>' +
+    '<div class="h2">Square</div><div>' + esc((d.square || {}).state) + '</div>' + (d.paused ? '<div>' + pill('The AI front desk is paused', 'bad') + '</div>' : '') + '</div>';
+  (d.switches || []).forEach(function(g){
+    h += '<div class="card"><div class="h2">' + esc(g.group) + '</div>';
+    (g.items || []).forEach(function(s){ h += '<div class="row" style="cursor:default"><div class="grow"><div class="who" style="font-size:17px">' + esc(s.label) + '</div>' + (s.note ? '<div class="what">' + esc(s.note) + '</div>' : '') + '</div>' +
+      pill(s.state, s.state === 'On' ? 'info' : 'gray') + '</div>'; });
+    h += '</div>';
+  });
+  return h;
+};
+R.admin = function(d){
+  var h = '';
+  (d.clients || []).forEach(function(c){
+    h += '<button class="card" style="text-align:left;cursor:pointer" data-client="' + esc(c.slug) + '"><div class="hrow"><div class="h2">' + esc(c.name) + '</div>' +
+      pill(c.problem_count ? c.problem_count + ' to check' : 'All good', c.tone) + '</div>' +
+      ((c.problems || []).length ? '<ul style="margin:0;padding-left:20px">' + c.problems.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ul>' : '') +
+      '<div class="muted">' + esc([c.last_message, c.last_idea, c.plan_until].filter(Boolean).join(' · ')) + '</div></button>';
+  });
+  return h;
+};
+
+// ---------- customer card + conversation (bottom sheet) ----------
+function sheet(html){ $('sheet').innerHTML = html + '<button class="close" data-act="close">Close</button>'; $('ov').classList.add('on'); }
+function closeSheet(){ if (typeof REC !== 'undefined' && REC.on && REC.where === 'sheet') recStop(true); $('ov').classList.remove('on'); if (S.dirty) { S.dirty = false; load(); } }
+$('ov').addEventListener('click', function(e){ if (e.target === $('ov') || e.target.closest('[data-act="close"]')) closeSheet(); });
+function openCustomer(args){
+  sheet('<div class="empty">Loading…</div>');
+  api('customer', args).then(function(r){
+    var k = r && r.ok && r.data;
+    if (!k || k.error) return sheet('<div class="empty">This customer was not found.</div>');
+    var tel = (k.phone || '').replace(/[^0-9+]/g, '');
+    var h = '<div class="big">' + esc(k.name) + '</div>' + (k.phone ? '<div>' + esc(k.phone) + '</div>' : '') +
+      (tel ? '<a class="btn" href="tel:' + esc(tel) + '">📞 Call</a>' : '') +
+      '<div class="grid"><div class="stat"><b>' + esc(k.visits || 0) + '</b><span>visits</span></div><div class="stat"><b>' + esc(k.no_shows || 0) + '</b><span>no-shows</span></div>' +
+      '<div class="stat"><b style="font-size:17px">' + esc(k.last_visit || '–') + '</b><span>last visit</span></div><div class="stat"><b style="font-size:17px">' + esc(k.next_visit || 'None') + '</b><span>next visit</span></div></div>' +
+      '<div class="card">' + (k.usual ? '<div><b>Usually gets:</b> ' + esc(k.usual) + (k.usual_every ? ', ' + esc(k.usual_every) : '') + '</div>' : '') +
+      (k.came_from ? '<div><b>First came:</b> ' + esc(k.came_from) + '</div>' : '') + (k.first_visit ? '<div><b>Customer since:</b> ' + esc(k.first_visit) + '</div>' : '') +
+      (k.social ? '<div><b>Social:</b> ' + esc(k.social) + '</div>' : '') + (k.interest ? '<div><b>Interested in:</b> ' + esc(k.interest) + '</div>' : '') + '</div>';
+    if (k.last_message) h += '<div class="card"><div class="h2">Last message</div><div>“' + esc(k.last_message.text) + '”</div><div class="muted">' + esc(k.last_message.platform + ' · ' + k.last_message.when) + '</div>' +
+      '<button class="close" data-thread="' + esc(k.last_message.conversation_id) + '">Read the conversation</button></div>';
+    h += '<div class="card"><div class="h2">Your notes</div>' + ((k.notes || []).length ? k.notes.map(function(n){ return '<div class="reply">' + esc(n.text) + '<div class="muted">' + esc(n.by + ' · ' + n.when) + '</div></div>'; }).join('') : '<div class="muted">No notes yet. (Adding notes comes in the next step.)</div>') + '</div>';
+    if ((k.recent || []).length) h += '<div class="card"><div class="h2">Last visits</div>' + k.recent.map(function(v){ return '<div class="row" style="cursor:default"><div class="grow"><div class="who" style="font-size:16px">' + esc(v.when) + '</div><div class="what">' + esc(v.what || '') + '</div></div>' + pill(v.status, v.status === 'Came' ? 'ok' : v.status === 'Booked' ? 'info' : v.status === 'No-show' ? 'bad' : 'gray') + '</div>'; }).join('') + '</div>';
+    sheet(h);
+  });
+}
+function openThread(args){
+  sheet('<div class="empty">Loading…</div>');
+  api('thread', args).then(function(r){
+    var t = r && r.ok && r.data;
+    if (!t || t.error) return sheet('<div class="empty">This conversation was not found.</div>');
+    var h = '<div class="big">' + esc(t.who) + '</div><div class="muted">' + esc(({sms:'Text messages',instagram:'Instagram',facebook:'Facebook',tiktok:'TikTok'})[t.platform] || t.platform || '') + (t.post ? ' · comment on ' + esc(t.post) : '') + '</div>';
+    if (t.ai_paused) h += pill('You took over this chat', 'warn');
+    h += '<div style="display:flex;flex-direction:column;gap:8px">' + (t.items || []).map(function(m){
+      return '<div class="bub ' + esc(m.from) + '">' + (m.label ? '<b>' + esc(m.label) + ':</b> ' : '') + esc(m.text) + '<small>' + (m.from === 'them' ? 'Customer' : m.from === 'ai' ? 'AI' : 'You') + (m.when ? ' · ' + esc(m.when) : '') + '</small></div>'; }).join('') + '</div>';
+    if (t.post_link) h += '<a href="' + esc(t.post_link) + '" target="_blank" rel="noopener">Open the post</a>';
+    h += '<div class="muted">Answering from here comes in the next step. For now, answer on the card in your Telegram group.</div>';
+    sheet(h);
+  });
+}
+
+
+// ---------- D4a · Ask or book (the same team desk as the Telegram group) ----------
+var ACT = N8N + '/webhook/dash-act';
+S.reply = ''; S.dirty = false; S.busy = false;
+function actCall(body){
+  var initData = tg && tg.initData;
+  if (!initData) return Promise.resolve({ ok: false, error: 'not_in_telegram' });
+  return fetch(ACT, { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ init_data: initData, slug: S.slug }, body)) })
+    .then(function(r){ return r.json(); }).catch(function(){ return { ok: false, error: 'network' }; });
+}
+function safeHtml(t){   // keep only bold / italic / code from the desk's Telegram text
+  var doc = new DOMParser().parseFromString('<div>' + String(t || '') + '</div>', 'text/html');
+  function walk(n){
+    if (n.nodeType === 3) return esc(n.nodeValue);
+    if (n.nodeType !== 1) return '';
+    var inner = Array.prototype.map.call(n.childNodes, walk).join('');
+    var tag = n.nodeName.toLowerCase(), keep = { b: 'b', strong: 'b', i: 'i', em: 'i', u: 'u', code: 'code' }[tag];
+    return keep ? '<' + keep + '>' + inner + '</' + keep + '>' : inner;
+  }
+  return walk(doc.body.firstChild).replace(/\n/g, '<br>');
+}
+function doAct(body, said, retried){
+  if (S.busy) return; S.busy = true;
+  var head = said ? '<div class="you">' + esc(said) + '</div>' : '';
+  sheet(head + '<div class="empty">One moment…</div>');
+  actCall(body).then(function(r){
+    S.busy = false;
+    if (r && r.error === 'need_check' && !retried) { return api('home').then(function(){ doAct(body, said, true); }); }
+    showAnswer(r, head);
+  });
+}
+var ACTERR = { not_in_group: 'Only people in the salon\'s Telegram group can do this.', paused: 'The front desk is paused for this salon.',
+  network: 'No connection right now. Nothing was booked or changed. Try again.', empty: 'Type what you need, for example: who is coming tomorrow?' };
+function showAnswer(r, head){
+  if (!r || r.ok === false) {
+    S.reply = '';
+    return sheet(head + '<div class="ans">' + esc((r && (r.hint || ACTERR[r.error] || ERR[r.error])) || 'Something went wrong. Nothing was booked or changed.') + '</div>');
+  }
+  var body = r.html ? safeHtml(r.text) : esc(r.text).replace(/\n/g, '<br>');
+  var btns = r.buttons || [];
+  S.reply = (!btns.length && /📝/.test(r.text || '')) ? String(r.text) : '';
+  var h = head + '<div class="ans">' + body + '</div>';
+  if (btns.length) h += '<div class="acts">' + btns.map(function(b){ return '<button data-cb="' + esc(b.cb) + '">' + esc(b.text) + '</button>'; }).join('') + '</div>';
+  if (S.reply) h += '<div class="ansbox" id="ansbox"><button type="button" class="mic" id="smic" aria-label="Speak your answer">🎤</button>' +
+    '<input id="sheetq" enterkeyhint="send" placeholder="Type or tap 🎤" aria-label="Your answer"><div class="recinfo" id="srecinfo">● Listening… 0 s</div>' +
+    '<button type="button" class="x" id="srecx" aria-label="Cancel">✕</button><button data-act="answer" id="ssend">Send</button></div>';
+  if (r.done) { S.dirty = true; h += '<div class="donebar">✅ Done. Your Telegram group got a copy.</div>'; }
+  sheet(h);
+  if (S.reply) { var q = $('sheetq'); if (q) q.focus(); }
+}
+$('askbar').addEventListener('submit', function(e){
+  e.preventDefault(); var q = $('askq'), t = (q.value || '').trim(); if (t.length < 2) return;
+  q.value = ''; q.blur(); doAct({ text: t, reply_text: S.reply }, t);
+});
+$('sheet').addEventListener('click', function(e){
+  var m = e.target.closest('#smic,#srecx');
+  if (m) { e.stopPropagation(); if (m.id === 'srecx') return recStop(true); return REC.on ? recStop(false) : recStart('sheet'); }
+  var b = e.target.closest('[data-cb],[data-act="answer"]'); if (!b) return;
+  e.stopPropagation();
+  if (REC.on && REC.where === 'sheet' && b.getAttribute('data-act') === 'answer') return recStop(false);
+  if (b.hasAttribute('data-cb')) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-cb]'), function(x){ x.disabled = true; });
+    return doAct({ cb: b.getAttribute('data-cb') }, b.textContent);
+  }
+  var q = $('sheetq'), t = q ? (q.value || '').trim() : ''; if (t.length < 1) return;
+  doAct({ text: t, reply_text: S.reply }, t);
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' && e.target && e.target.id === 'sheetq') { e.preventDefault(); var b = document.querySelector('[data-act="answer"]'); if (b) b.click(); }
+});
+
+
+// ---------- D4b · 🎤 speak instead of typing ----------
+var REC = { on: false, rec: null, chunks: [], stream: null, t0: 0, timer: null, cancel: false, where: 'bar' };
+function recEl(bar, sheetId){ return REC.where === 'sheet' ? $(sheetId) : $(bar); }
+var MAX_SEC = 60;
+function micHelp(msg){
+  sheet('<div class="ans">' + esc(msg) + '</div><div class="muted">You can also type in the box, or send a voice note in your Telegram group: the same desk answers it.</div>');
+}
+function recUi(on){
+  var box = recEl('askbar', 'ansbox'), mic = recEl('mic', 'smic');
+  if (box) box.classList.toggle('rec', on);
+  if (mic) mic.textContent = on ? '■' : '🎤';
+}
+function recTick(){
+  var sec = Math.floor((Date.now() - REC.t0) / 1000);
+  var info = recEl('recinfo', 'srecinfo'); if (info) info.textContent = '● Listening… ' + sec + ' s' + (REC.where === 'sheet' ? '' : '  (tap Send when done)');
+  if (sec >= MAX_SEC) recStop(false);
+}
+function recStart(where){
+  if (REC.on) return;
+  REC.where = where === 'sheet' ? 'sheet' : 'bar';
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+    return micHelp('This phone does not let the dashboard use the microphone.');
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream){
+    REC.stream = stream; REC.chunks = []; REC.cancel = false;
+    var opts = {};
+    ['audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg;codecs=opus'].some(function(t){ if (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) { opts.mimeType = t; return true; } return false; });
+    try { REC.rec = new MediaRecorder(stream, opts); } catch (e) { REC.rec = new MediaRecorder(stream); }
+    REC.rec.ondataavailable = function(ev){ if (ev.data && ev.data.size) REC.chunks.push(ev.data); };
+    REC.rec.onstop = recDone;
+    REC.rec.start(); REC.on = true; REC.t0 = Date.now();
+    REC.timer = setInterval(recTick, 500); recTick(); recUi(true);
+  }).catch(function(err){
+    // say exactly what the phone / computer answered (the browser gives a reason name)
+    var n = String((err && err.name) || 'Error');
+    var why = {
+      NotFoundError: 'No microphone was found on this device.',
+      DevicesNotFoundError: 'No microphone was found on this device.',
+      NotReadableError: 'The microphone is busy: another app (a call, a recorder) is using it. Close that app and try again.',
+      TrackStartError: 'The microphone is busy: another app is using it. Close that app and try again.',
+      NotAllowedError: 'The microphone was blocked. If a question popped up, tap Allow. On a computer, also check the system setting that lets apps use the microphone (Windows: Settings → Privacy & security → Microphone → let desktop apps access your microphone).',
+      PermissionDeniedError: 'The microphone was blocked. If a question popped up, tap Allow.',
+      SecurityError: 'Telegram did not let this page use the microphone on this device.',
+      AbortError: 'The microphone stopped before it started. Try again.',
+      NotSupportedError: 'This device has no microphone the page can use.'
+    }[n] || 'The microphone could not start on this device.';
+    micHelp(why + ' (' + n + ')');
+  });
+}
+function recStop(cancel){
+  if (!REC.on) return;
+  REC.on = false; REC.cancel = !!cancel; clearInterval(REC.timer); recUi(false);
+  try { REC.rec.stop(); } catch (e) { recDone(); }
+  try { REC.stream.getTracks().forEach(function(t){ t.stop(); }); } catch (e) {}
+}
+function b64(buf){
+  var bytes = new Uint8Array(buf), out = '', step = 0x8000;
+  for (var i = 0; i < bytes.length; i += step) out += String.fromCharCode.apply(null, bytes.subarray(i, i + step));
+  return btoa(out);
+}
+function toWav(blob){   // any recording → 16 kHz mono 16-bit WAV
+  return blob.arrayBuffer().then(function(buf){
+    var AC = window.AudioContext || window.webkitAudioContext; var ac = new AC();
+    return new Promise(function(res, rej){ ac.decodeAudioData(buf, res, rej); }).then(function(audio){
+      try { ac.close(); } catch (e) {}
+      var rate = 16000, len = Math.max(1, Math.ceil(audio.duration * rate));
+      var OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; var off = new OAC(1, len, rate);
+      var src = off.createBufferSource(); src.buffer = audio; src.connect(off.destination); src.start(0);
+      return off.startRendering();
+    });
+  }).then(function(r){
+    var d = r.getChannelData(0), n = d.length, view = new DataView(new ArrayBuffer(44 + n * 2));
+    function str(o, t){ for (var i = 0; i < t.length; i++) view.setUint8(o + i, t.charCodeAt(i)); }
+    str(0, 'RIFF'); view.setUint32(4, 36 + n * 2, true); str(8, 'WAVE'); str(12, 'fmt '); view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, 16000, true); view.setUint32(28, 32000, true);
+    view.setUint16(32, 2, true); view.setUint16(34, 16, true); str(36, 'data'); view.setUint32(40, n * 2, true);
+    for (var i = 0; i < n; i++) { var v = Math.max(-1, Math.min(1, d[i])); view.setInt16(44 + i * 2, v < 0 ? v * 0x8000 : v * 0x7FFF, true); }
+    return { b64: b64(view.buffer), mime: 'audio/wav', seconds: Math.round(n / 16000) };
+  });
+}
+function recDone(){
+  if (REC.cancel) { REC.chunks = []; return; }
+  var sec = Math.max(1, Math.round((Date.now() - REC.t0) / 1000));
+  if (sec < 1 || !REC.chunks.length) return micHelp('I did not hear anything. Tap 🎤, speak, then tap Send.');
+  var type = (REC.rec && REC.rec.mimeType) || 'audio/webm';
+  var blob = new Blob(REC.chunks, { type: type }); REC.chunks = [];
+  sheet('<div class="you">🎙 Voice note · ' + sec + ' s</div><div class="empty">Listening to it…</div>');
+  toWav(blob).catch(function(){   // could not convert: send the recording as it is
+    return blob.arrayBuffer().then(function(buf){ return { b64: b64(buf), mime: type.split(';')[0], seconds: sec }; });
+  }).then(function(a){
+    if (a.b64.length > 3500000) return micHelp('That was too long for me. Please keep it under one minute.');
+    doAct({ audio_b64: a.b64, audio_mime: a.mime, seconds: a.seconds || sec, reply_text: S.reply }, '🎙 Voice note · ' + sec + ' s');
+  });
+}
+$('mic').addEventListener('click', function(){ if (REC.on) recStop(false); else recStart('bar'); });
+$('recx').addEventListener('click', function(){ recStop(true); });
+$('askbar').addEventListener('submit', function(e){ if (REC.on) { e.preventDefault(); e.stopImmediatePropagation(); recStop(false); } }, true);
+
+// ---------- taps ----------
+document.addEventListener('click', function(e){
+  var b = e.target.closest('button,[data-thread],[data-comment]'); if (!b) return;
+  if (b.getAttribute('data-act') === 'help') { S.showHelp = !S.showHelp; try { localStorage.setItem('dash_help', S.showHelp ? '1' : '0'); } catch (x) {} return load(); }
+  if (b.hasAttribute('data-arg')) { S.args[b.getAttribute('data-arg')] = b.getAttribute('data-val');
+    if (b.getAttribute('data-arg') === 'kind' && b.getAttribute('data-val') === 'comment' && S.args.platform === 'sms') S.args.platform = 'all'; delete S.args.before; if (b.getAttribute('data-arg') === 'range') delete S.args.day; return load(); }
+  if (b.hasAttribute('data-day')) { S.args.day = b.getAttribute('data-day'); var bars = document.querySelectorAll('[data-day]'); for (var i = 0; i < bars.length; i++) bars[i].classList.toggle('last', bars[i] === b); return loadDay(S.args.day); }
+  if (b.hasAttribute('data-more')) { S.args.before = b.getAttribute('data-more'); return load(); }
+  if (b.hasAttribute('data-tab-go')) { S.tab = b.getAttribute('data-tab-go'); S.args = {}; return load(); }
+  if (b.hasAttribute('data-client')) { S.slug = b.getAttribute('data-client'); S.tab = 'today'; S.args = {}; return load(); }
+  if (b.hasAttribute('data-cust-b')) return openCustomer({ booking_id: b.getAttribute('data-cust-b') });
+  if (b.hasAttribute('data-cust-l')) return openCustomer({ lead_id: b.getAttribute('data-cust-l') });
+  if (b.hasAttribute('data-cust-k')) { var k = b.getAttribute('data-cust-k'); return openCustomer(k.indexOf('ph:') === 0 ? { phone: k.slice(3) } : { square_customer_id: k }); }
+  if (b.hasAttribute('data-thread')) return openThread({ conversation_id: b.getAttribute('data-thread') });
+  if (b.hasAttribute('data-comment')) return openThread({ comment_id: b.getAttribute('data-comment') });
+});
+document.addEventListener('change', function(e){ if (e.target.id === 'plat') { S.args.platform = e.target.value; delete S.args.before; load(); } });
+document.addEventListener('input', function(e){ if (e.target.id === 'svcq') { S.svcFilter = e.target.value; var l = $('svcl'); if (l) l.innerHTML = svcRows(S._svc || []); } });
+
+// first open: the link's start_param decides the salon (the door checks it)
+try { S.slug = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || null; } catch (e) {}
+load();
+})();
+</script>
+</body>
+</html>
